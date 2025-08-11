@@ -241,27 +241,53 @@ The application uses Tailwind CSS for styling:
 - Input validation
 - XSS protection
 
+## Environment Configuration
+
+The application uses environment files to manage configuration for different environments:
+
+### Development Environment
+- **File**: `src/environments/environment.ts`
+- **API URL**: `http://localhost:3001/api`
+- **Production**: `false`
+
+### Production Environment
+- **File**: `src/environments/environment.prod.ts`
+- **API URL**: `https://your-production-api.com/api` (update this)
+- **Production**: `true`
+
+### Updating API URLs
+To change the API URL for different environments:
+
+1. **Development**: Edit `src/environments/environment.ts`
+2. **Production**: Edit `src/environments/environment.prod.ts`
+
 ## Production Deployment
 
 For production deployment:
 
-1. **Build the frontend:**
+1. **Update production API URL:**
+   ```bash
+   # Edit src/environments/environment.prod.ts
+   # Change apiUrl to your production API endpoint
+   ```
+
+2. **Build the frontend:**
    ```bash
    npm run build
    ```
 
-2. **Set up environment variables:**
+3. **Set up environment variables:**
    - JWT_SECRET
    - Database connection (replace in-memory storage)
 
-3. **Deploy backend:**
+4. **Deploy backend:**
    - Use PM2 or similar process manager
    - Set up reverse proxy (nginx)
    - Configure SSL certificates
 
-4. **Deploy frontend:**
+5. **Deploy frontend:**
    - Serve built files from a web server
-   - Configure API base URL
+   - The API URL is automatically configured from environment files
 
 ## Contributing
 

@@ -12,37 +12,23 @@ import { AuthService, User } from '../../services/auth.service';
   imports: [CommonModule, RouterLink]
 })
 export class DashboardComponent implements OnInit {
-  latestProducts: Product[] = [];
-  currentUser: User | null = null;
-  isLoading = true;
-  errorMessage = '';
+  public latestProducts: Product[] = [];
+  public currentUser: User | null = null;
+  public isLoading: boolean = true;
+  public errorMessage: string = '';
 
   constructor(
-    private productService: ProductService,
-    public authService: AuthService,
-    private router: Router
+    private readonly productService: ProductService,
+    private readonly  authService: AuthService,
+    private readonly  router: Router
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.currentUser = this.authService.currentUserValue;
     this.loadLatestProducts();
   }
 
-  loadLatestProducts(): void {
-    this.isLoading = true;
-    this.productService.getLatestProducts().subscribe({
-      next: (products) => {
-        this.latestProducts = products;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = 'Failed to load latest products';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  getImageUrl(imagePath: string | undefined): string {
+  public getImageUrl(imagePath: string | undefined): string {
     if (!imagePath) {
       return '';
     }
@@ -56,21 +42,34 @@ export class DashboardComponent implements OnInit {
       // If it's an uploaded image from the server
       finalUrl = `http://localhost:3001${imagePath}`;
     }
-    
-    console.log('Image URL:', { original: imagePath, final: finalUrl });
+
     return finalUrl;
   }
 
-  getTotalValue(): number {
+  public getTotalValue(): number {
     return this.latestProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
   }
 
-  getLowStockCount(): number {
+  public getLowStockCount(): number {
     return this.latestProducts.filter(product => product.quantity < 10).length;
   }
 
-  logout(): void {
+  public logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  private loadLatestProducts(): void {
+    this.isLoading = true;
+    this.productService.getLatestProducts().subscribe({
+      next: (products) => {
+        this.latestProducts = products;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load latest products';
+        this.isLoading = false;
+      }
+    });
   }
 }

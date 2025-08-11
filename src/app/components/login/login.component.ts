@@ -12,16 +12,16 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterLink]
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
-  isLoading = false;
-  errorMessage = '';
-  successMessage = '';
+  public loginForm: FormGroup;
+  public isLoading: boolean = false;
+  public errorMessage: string = '';
+  public successMessage: string = '';
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     // Check if user was redirected from registration
     this.route.queryParams.subscribe(params => {
       if (params['registered'] === 'true') {
@@ -38,15 +38,15 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
 
-      const { email, password } = this.loginForm.value;
+      const { email, password }: { email: string; password: string } = this.loginForm.value;
 
       this.authService.login(email, password).subscribe({
-        next: (response) => {
+        next: () => {
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
         },
@@ -58,8 +58,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  getErrorMessage(field: string): string {
-    const control = this.loginForm.get(field);
+  public getErrorMessage(field: string): string {
+    const control: any = this.loginForm.get(field);
     if (control?.hasError('required')) {
       return `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
     }

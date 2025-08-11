@@ -12,10 +12,10 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterLink]
 })
 export class RegisterComponent {
-  registerForm: FormGroup;
-  isLoading = false;
-  errorMessage = '';
-  successMessage = '';
+  public registerForm: FormGroup;
+  public isLoading: boolean = false;
+  public errorMessage: string = '';
+  public successMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -30,19 +30,7 @@ export class RegisterComponent {
     }, { validators: this.passwordMatchValidator });
   }
 
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password');
-    const confirmPassword = form.get('confirmPassword');
-    
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    }
-    
-    return null;
-  }
-
-  onSubmit(): void {
+  public onSubmit(): void {
     if (this.registerForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
@@ -51,7 +39,7 @@ export class RegisterComponent {
       const { name, email, password } = this.registerForm.value;
 
       this.authService.register(name, email, password).subscribe({
-        next: (response) => {
+        next: () => {
           this.isLoading = false;
           this.successMessage = 'Account created successfully! Please sign in.';
           
@@ -71,7 +59,7 @@ export class RegisterComponent {
     }
   }
 
-  getErrorMessage(field: string): string {
+  public getErrorMessage(field: string): string {
     const control = this.registerForm.get(field);
     if (control?.hasError('required')) {
       return `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
@@ -89,5 +77,17 @@ export class RegisterComponent {
       return 'Passwords do not match';
     }
     return '';
+  }
+
+  private passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+    
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    
+    return null;
   }
 }

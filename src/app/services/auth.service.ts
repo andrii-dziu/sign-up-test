@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: string;
@@ -19,7 +20,7 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3001/api';
+  private apiUrl: string = environment.apiUrl;
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -38,7 +39,7 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
+  public register(name: string, email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, {
       name,
       email,
@@ -53,7 +54,7 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
+  public login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, {
       email,
       password
@@ -67,13 +68,13 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  public logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
   }
 
-  getProfile(): Observable<User> {
+  public getProfile(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/auth/profile`);
   }
 
@@ -90,7 +91,7 @@ export class AuthService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
-  getToken(): string | null {
+  public getToken(): string | null {
     return localStorage.getItem('token');
   }
 }

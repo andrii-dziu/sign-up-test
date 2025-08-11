@@ -12,18 +12,18 @@ import { ProductService, Product } from '../../services/product.service';
   imports: [CommonModule, ReactiveFormsModule, RouterLink]
 })
 export class ProductsComponent implements OnInit {
-  products: Product[] = [];
-  productForm: FormGroup;
-  isModalOpen = false;
-  isEditing = false;
-  editingProductId: string | null = null;
-  isLoading = true;
-  errorMessage = '';
-  selectedFile: File | null = null;
+  public products: Product[] = [];
+  public productForm: FormGroup;
+  public isModalOpen: boolean = false;
+  public isEditing: boolean = false;
+  public editingProductId: string | null = null;
+  public isLoading: boolean = true;
+  public errorMessage: string = '';
+  public selectedFile: File | null = null;
 
   constructor(
-    private productService: ProductService,
-    private fb: FormBuilder
+    private readonly  productService: ProductService,
+    private readonly  fb: FormBuilder
   ) {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -34,25 +34,11 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.loadProducts();
   }
 
-  loadProducts(): void {
-    this.isLoading = true;
-    this.productService.getProducts().subscribe({
-      next: (products) => {
-        this.products = products;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = 'Failed to load products';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  openModal(product?: Product): void {
+  public openModal(product?: Product): void {
     this.isModalOpen = true;
     this.isEditing = !!product;
     this.editingProductId = product?.id || null;
@@ -69,7 +55,7 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  closeModal(): void {
+  public closeModal(): void {
     this.isModalOpen = false;
     this.isEditing = false;
     this.editingProductId = null;
@@ -77,14 +63,14 @@ export class ProductsComponent implements OnInit {
     this.selectedFile = null;
   }
 
-  onFileSelected(event: any): void {
+  public onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
       this.selectedFile = file;
     }
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     if (this.productForm.valid) {
       const formData = new FormData();
       formData.append('name', this.productForm.get('name')?.value);
@@ -120,20 +106,20 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  deleteProduct(id: string): void {
+  public deleteProduct(id: string): void {
     if (confirm('Are you sure you want to delete this product?')) {
       this.productService.deleteProduct(id).subscribe({
         next: () => {
           this.loadProducts();
         },
-        error: (error) => {
+        error: () => {
           this.errorMessage = 'Failed to delete product';
         }
       });
     }
   }
 
-  getImageUrl(imagePath: string | undefined): string {
+  public getImageUrl(imagePath: string | undefined): string {
     if (!imagePath) {
       return '';
     }
@@ -147,7 +133,7 @@ export class ProductsComponent implements OnInit {
     return `http://localhost:3001${imagePath}`;
   }
 
-  getErrorMessage(field: string): string {
+  public getErrorMessage(field: string): string {
     const control = this.productForm.get(field);
     if (control?.hasError('required')) {
       return `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
@@ -159,5 +145,19 @@ export class ProductsComponent implements OnInit {
       return `${field.charAt(0).toUpperCase() + field.slice(1)} must be greater than 0`;
     }
     return '';
+  }
+
+  private loadProducts(): void {
+    this.isLoading = true;
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load products';
+        this.isLoading = false;
+      }
+    });
   }
 }
